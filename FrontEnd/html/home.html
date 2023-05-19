@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Formulario de Tareas</title>
+  <link rel="stylesheet" type="text/css" href="../css/style.css">
+</head>
+<body>
+    <h1>Formulario de Tareas</h1>
+    
+    <div class="form-container">
+      <form id="task-form" method="post">
+        <div class="form-group">
+          <label for="task-name">Nombre de la tarea:</label>
+          <input type="text" id="task-name" name="task-name" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="task-desc">Descripción:</label>
+          <textarea id="task-desc" name="task-desc"></textarea>
+        </div>
+        
+        <div class="form-group status" id="task-status">
+          <label for="task-status">Estado:</label>
+          <input type="radio" id="status-pending" name="task-status" value="Pendiente" checked>
+          <label for="status-pending">Pendiente</label>
+          <input type="radio" id="status-completed" name="task-status" value="Completada">
+          <label for="status-completed">Completada</label>
+        </div>
+        
+        <div class="form-group">
+          <button type="button" class="btn-submit" id="btn-submit">Agregar tarea</button>
+        </div>
+      </form>
+    </div>
+  
+    <script src="../js/script.js"></script>
+  </body>
+</html>
