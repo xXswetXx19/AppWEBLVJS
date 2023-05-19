@@ -1,0 +1,25 @@
+En que consta:
+El proyecto es simple, una aplicacion web de solo una interfaz que guarda tareas, consta de
+2 servidores, uno para el frontend (Para que funcione el javascript y el linkeo html) y otra
+para el backend (Para los servicios API de php).
+
+Dependencias:
+- MySQL   (https://dev.mysql.com/downloads/installer/)
+- PHP     (https://www.php.net/downloads)
+- Laravel (https://laravel.com/docs/10.x)
+- NodeJS  (https://nodejs.org/es)
+
+Pasos para iniciar el proyecto:
+1) Crear una base de datos llamada "taskmanager"
+
+2) Entrar al directorio "Backend" y cambiar el nombre de ".env.example" por ".env"
+
+3) Entrar al archivo ".env" y cambiar la siguiente informacion:
+DB_USERNAME (Poner el nombre de usuario que usas para entrar a las bases de datos)
+DB_PASSWORD (Poner la contraseña que usas para entrar a las bases de datos)
+Cabe recalcar que todo esto es para bases de datos MySQL
+
+4) Abrir una consola en el directorio "Backend" y ejecutar el siguiente comando 
+"php artisan migrate"
+
+5) Iniciar la aplicacion dando doble click al archivo "start.bat"
