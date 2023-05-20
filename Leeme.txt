@@ -8,6 +8,8 @@ Dependencias:
 - PHP     (https://www.php.net/downloads)
 - Laravel (https://laravel.com/docs/10.x)
 - NodeJS  (https://nodejs.org/es)
+- Composer (https://getcomposer.org)
+
 
 Pasos para iniciar el proyecto:
 1) Crear una base de datos llamada "taskmanager"
@@ -19,7 +21,9 @@ DB_USERNAME (Poner el nombre de usuario que usas para entrar a las bases de dato
 DB_PASSWORD (Poner la contraseña que usas para entrar a las bases de datos)
 Cabe recalcar que todo esto es para bases de datos MySQL
 
-4) Abrir una consola en el directorio "Backend" y ejecutar el siguiente comando 
+4) En la consola, dentro del directorio backend escribir "composer install"
+
+5) Abrir una consola en el directorio "Backend" y ejecutar el siguiente comando 
 "php artisan migrate"
 
-5) Iniciar la aplicacion dando doble click al archivo "start.bat"
+6) Iniciar la aplicacion dando doble click al archivo "start.bat"

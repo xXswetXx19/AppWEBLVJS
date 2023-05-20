@@ -56,6 +56,6 @@ class TaskController extends Controller
     public function destroy(string $id)
     {
         $task = Task::destroy($id);
-        return \response( content: "La tarea con el id $id ha sido eliminada");
+        return \response($task);
     }
 }
