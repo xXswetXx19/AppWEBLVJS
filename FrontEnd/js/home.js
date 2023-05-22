@@ -4,41 +4,42 @@ const headers = {
 }
 // Funciones para el consumo de la API
 const PostData = async (name, description, status) => {
-    const task = JSON.stringify({ name, description, status })
+    const task = { name, description, status }
     const response = await fetch('http://localhost:8000/api/task/', {
         method: 'POST',
         headers,
-        body: task,
+        body: JSON.stringify(task),
     })
+    if (!response.ok) throw new Error('Error al crear la tarea');
     const data = await response.json()
     return data
 }
 
-const GetData = async (id) => {
-    const response = await fetch(`http://localhost:8000/api/task/${id ? id : ''}`)
+const GetDataFromAPI = async (taskId = "") => {
+    const response = await fetch(`http://localhost:8000/api/task/${taskId}`)
     const data = await response.json()
     return data
 }
-const PutData = async (id, data) => {
-    const response = await fetch(`http://localhost:8000/api/task/${id}`, {
+
+const PutData = async (taskId, data) => {
+    const response = await fetch(`http://localhost:8000/api/task/${taskId}`, {
       method: 'PUT',
       headers,
       body: JSON.stringify(data),
     });
-  
+    if (!response.ok) throw new Error('Error al actualizar la tarea');
     const responseData = await response.json();
     return responseData;
-  };
-  
-  
-const DeleteData = async (id) => {
-    const response = await fetch(`http://localhost:8000/api/task/${id}`, {
-        method: 'DELETE',
+};
+
+const DeleteData = async (taskId) => {
+    const response = await fetch(`http://localhost:8000/api/task/${taskId}`, { 
+      method: 'DELETE' 
     })
+    if (!response.ok) throw new Error('Error al eliminar la tarea');
     const data = await response.json()
     return data
 }
-
 
 // Eventos para el formulario de creación de tareas
 const BtnAddTask = document.getElementById('btn-submit');
@@ -62,7 +63,6 @@ const getCurrentDate = () => {
     return currentDate
 }
 
-
 async function createTask() {
   const form = document.getElementById('task-form');
   const data = GetDataFromForm();
@@ -79,55 +79,38 @@ const taskList = document.getElementById('task-list');
 // Eventos para la lista de tareas
 document.addEventListener('DOMContentLoaded', UpdateList); // Nuevo evento
 
-// Funciones para la lista de tareas
-async function getTasks() {
-  const tasks = await GetData();  
-  return tasks;
-}
-
 // Llenando la tabla con las tareas
 function createTaskElement(task) {
-    const taskRow = document.createElement('tr');
-    taskRow.classList.add('task-item');
-    taskRow.dataset.id = task.id;
-  
-    const titleCell = document.createElement('td');
-    titleCell.textContent = task.name;
-    taskRow.appendChild(titleCell);
-  
-    const descriptionCell = document.createElement('td');
-    descriptionCell.textContent = task.description;
-    taskRow.appendChild(descriptionCell);
-  
-    const statusCell = document.createElement('td');
-    statusCell.textContent = task.status;
-    taskRow.appendChild(statusCell);
-  
-    const dateCell = document.createElement('td');
-    dateCell.textContent = task.created_at;
-    taskRow.appendChild(dateCell);
-  
-    const actionsCell = document.createElement('td');
-    actionsCell.classList.add('actions');
-    actionsCell.innerHTML = `
-      <button class="delete-btn">Eliminar</button>
-      <button class="edit-btn">Editar</button>
-      <button class="complete-btn">Completar</button>
-    `;
-    
-    // Obteniendo los botones de la fila de la tarea
-    const editButton = actionsCell.querySelector('.edit-btn');
-    const deleteButton = actionsCell.querySelector('.delete-btn');
-    const completeButton = actionsCell.querySelector('.complete-btn');
+  const { id, name, description, status, created_at } = task;
 
-    // Eventos para los botones de la fila de la tarea 
-    editButton.addEventListener('click', OpenEditWin);
-    deleteButton.addEventListener('click', DeleteTask);
-    completeButton.addEventListener('click', CompleteTask);    
+  const taskRow = document.createElement('tr');
+  taskRow.classList.add('task-item');
+  taskRow.dataset.id = id;
 
-    // Agreando los botones a la fila de la tarea
-    taskRow.appendChild(actionsCell);
-    return taskRow;
+  const cells = ['name', 'description', 'status', 'created_at'].map((prop) => {
+    const cell = document.createElement('td');
+    cell.textContent = prop === 'created_at' ? created_at.split('T')[0] : task[prop];
+    return cell;
+  });
+
+  const actionsCell = document.createElement('td');
+  actionsCell.classList.add('actions');
+  actionsCell.innerHTML = `
+    <button class="delete-btn">Eliminar</button>
+    <button class="edit-btn">Editar</button>
+    <button class="complete-btn">Completar</button>
+  `;
+
+  const [deleteButton, editButton, completeButton] = actionsCell.querySelectorAll('button');
+
+  deleteButton.addEventListener('click', () => DeleteTask(id));
+  editButton.addEventListener('click', () => OpenEditWin(id));
+  completeButton.addEventListener('click', () => CompleteTask(id));
+
+  cells.forEach((cell) => taskRow.appendChild(cell));
+  taskRow.appendChild(actionsCell);
+
+  return taskRow;
 }
   
 // Función para limpiar la lista de tareas
@@ -138,7 +121,7 @@ function clearList() {
 // Función para llenar la lista de tareas (Nuevo)
 async function UpdateList() {
   clearList();
-  const tasks = await getTasks();
+  const tasks = await GetDataFromAPI();  
   tasks.forEach(task => {
     task.created_at = task.created_at.split('T')[0];
     taskList.appendChild(createTaskElement(task));
@@ -151,7 +134,6 @@ async function addTaskToList(task) {
   taskList.appendChild(createTaskElement(task));
 }
 
-
 // Editar tarea
 // Funciones y eventos de los botones de la fila de la tarea
 
@@ -163,18 +145,8 @@ window.addEventListener('click', function(event) {
   }
 });
 
-
 // Funciones para el modal de edición de tareas
-const getTaskId = async (event) => {
-  const editButton = event.target;
-  const row = editButton.closest('tr');
-  const taskId = row.dataset.id
-  return taskId
-}
-
-async function OpenEditWin(event) {
-  const id = await getTaskId(event);
-
+async function OpenEditWin(taskId) {
   // Obteniendo los elementos del modal
   const modal = document.getElementById('edit-modal');
   const closeButton = document.querySelector('.close');
@@ -182,7 +154,7 @@ async function OpenEditWin(event) {
   const editForm = document.getElementById('edit-form');
 
   // Obteniendo los datos de la tarea a editar
-  const task = document.querySelector(`[data-id="${id}"]`);
+  const task = document.querySelector(`[data-id="${taskId}"]`);
   const taskName = task.querySelector('td:nth-child(1)').textContent;
   const taskDesc = task.querySelector('td:nth-child(2)').textContent;
 
@@ -204,58 +176,40 @@ async function OpenEditWin(event) {
       
       const newData = { name: updatedTaskName, description: updatedTaskDesc };
       
-      PutData(id, newData);
-      editTaskInList(id, newData);
+      PutData(taskId, newData);
+      editTaskInList(taskId, newData);
 
       editForm.reset(); // Restablecer los valores del formulario
       modal.style.display = 'none';
 });
 }
 
-
-function editTaskInList (Id, newData) {
+function editTaskInList (taskId, newData) {
   const { name, description } = newData;
-  const task = document.querySelector(`[data-id="${Id}"]`);
+  const taskElement = document.querySelector(`.task-item[data-id="${taskId}"]`);
   if (name) {
-    const taskName = task.querySelector('td:nth-child(1)');
+    const taskName = taskElement.querySelector('td:nth-child(1)');
     taskName.textContent = name;
   }
   if (description) {
-    const taskDesc = task.querySelector('td:nth-child(2)');
+    const taskDesc = taskElement.querySelector('td:nth-child(2)');
     taskDesc.textContent = description;
   }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // Eliminar tarea
-async function DeleteTask(event) {
-  const taskId = await getTaskId(event);
-  const task = document.querySelector(`[data-id="${taskId}"]`);
+async function DeleteTask(taskId) {
+  const taskElement = document.querySelector(`.task-item[data-id="${taskId}"]`);
   await DeleteData(taskId);
-  task.remove();
-
+  taskElement.remove();
 }
 
 // Completar tarea
-async function CompleteTask(event) {
-  const taskId = await getTaskId(event);
-  const task = document.querySelector(`[data-id="${taskId}"]`);
-  const taskStatus = task.querySelector('td:nth-child(3)');
-  const newStatus = 'Completada' 
-  const newData = { status: newStatus };
-  await PutData(taskId, newData);
-  taskStatus.textContent = newStatus;
+async function CompleteTask(taskId) {
+  const taskElement = document.querySelector(`.task-item[data-id="${taskId}"]`);
+  const statusCell = taskElement.querySelector('td:nth-child(3)');
+  statusCell.textContent = 'Completada';
+
+  const newData = { status: 'Completada' };
+  await putData(id, newData);
 }

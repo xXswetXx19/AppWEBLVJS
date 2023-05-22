@@ -94,6 +94,8 @@ select {
   border-collapse: separate; /* Cambia el valor a "separate" */
   border-spacing: 0; /* Agrega esta propiedad para establecer el espaciado entre celdas en 0 */
   border: 1px solid #000000;
+  table-layout: fixed;
+
 }
 
 
@@ -104,20 +106,20 @@ select {
 }
 
 
-
+.table th,
 .table td {
   padding: 5px;
   border-bottom: 1px solid #ccc;
   text-align: center;
+  word-break: break-word;
 }
 
 .td actions {
   display: flex;
   justify-content: flex-end;
   gap: 5px;
+  
 }
-
-
 
 /* Estilos de las acciones */
 
@@ -216,4 +218,27 @@ select {
 
 #btn-update:focus {
   outline: none;
+}
+
+
+/* Mision vision y otros */
+#mision-vision-valores {
+  display: flex;
+  justify-content: space-between;
+}
+
+.block {
+  width: calc(33.33% - 20px);
+  padding: 20px;
+  background-color: #f2f2f2;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.block h3 {
+  margin-top: 0;
+}
+
+.block p {
+  margin-bottom: 0;
 }
